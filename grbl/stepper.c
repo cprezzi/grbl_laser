@@ -71,6 +71,9 @@ typedef struct {
   #else
     uint8_t prescaler;      // Without AMASS, a prescaler is required to adjust for slow timing.
   #endif
+  #ifdef ADAPTIVE_SPINDLE_PWM
+	uint8_t relative_feed;	// Actual relative feed percentage	
+  #endif
 } segment_t;
 static segment_t segment_buffer[SEGMENT_BUFFER_SIZE];
 
@@ -335,6 +338,12 @@ ISR(TIMER1_COMPA_vect)
         st.steps[Z_AXIS] = st.exec_block->steps[Z_AXIS] >> st.exec_segment->amass_level;
       #endif
       
+	  #ifdef ADAPTIVE_SPINDLE_PWM
+		// With ADAPTIVE_SPINDLE_PWM enabled, adjust Spindle-PWM to actual feed percentage
+		if (gc_state.modal.spindle != SPINDLE_DISABLE) { 
+			spindle_set_state(gc_state.modal.spindle, gc_state.spindle_speed * st.exec_segment->relative_feed); 
+		}
+	  #endif	  
     } else {
       // Segment buffer empty. Shutdown.
       st_go_idle();
@@ -801,6 +810,11 @@ void st_prep_buffer()
         }
       }
     #endif
+	
+	#ifdef ADAPTIVE_SPINDLE_PWM
+      // Compute relative feed percentage
+	  prep_segment->relative_feed = prep.current_speed / prep.maximum_speed;
+	#endif
 
     // Segment complete! Increment segment buffer indices.
     segment_buffer_head = segment_next_head;
