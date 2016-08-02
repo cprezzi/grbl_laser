@@ -72,8 +72,8 @@
 // on separate pin, but homed in one cycle. Also, it should be noted that the function of hard limits 
 // will not be affected by pin sharing.
 // NOTE: Defaults are set for a traditional 3-axis CNC machine. Z-axis first to clear, followed by X & Y.
-#define HOMING_CYCLE_0 (1<<X_AXIS)                // REQUIRED: First move Z to clear workspace.
-#define HOMING_CYCLE_1 (1<<Y_AXIS)  			  // OPTIONAL: Then move X,Y at the same time.
+#define HOMING_CYCLE_0 (1<<Z_AXIS)                // REQUIRED: First move Z to clear workspace.
+#define HOMING_CYCLE_1 ((1<<X_AXIS)|(1<<Y_AXIS))  // OPTIONAL: Then move X,Y at the same time.
 // #define HOMING_CYCLE_2                         // OPTIONAL: Uncomment and add axes mask to enable
 
 // Number of homing cycles performed after when the machine initially jogs to limit switches.
@@ -210,10 +210,6 @@
 // noise and shake your machine. At even lower step frequencies, AMASS adapts and provides even better
 // step smoothing. See stepper.c for more details on the AMASS system works.
 #define ADAPTIVE_MULTI_AXIS_STEP_SMOOTHING  // Default enabled. Comment to disable.
-
-// Adaptive Spindle-PWM (Laser-Power) depending on axes acceleration/decellereation. This solves the
-// darker Engraving at start and end of lines.
-#define ADAPTIVE_SPINDLE_PWM  // Default enabled. Comment to disable.
 
 // Sets the maximum step rate allowed to be written as a Grbl setting. This option enables an error 
 // check in the settings module to prevent settings values that will exceed this limitation. The maximum
